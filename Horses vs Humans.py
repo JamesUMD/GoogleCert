@@ -15,48 +15,49 @@ import matplotlib.pyplot as plt
 #Imports the data from an url
 zip_file_url_train = 'https://storage.googleapis.com/laurencemoroney-blog.appspot.com/horse-or-human.zip'
 zip_file_url_val = 'https://storage.googleapis.com/laurencemoroney-blog.appspot.com/validation-horse-or-human.zip'
-path = '/Users/jamesscott/Documents'
+path = 'C:/Users/jes17/OneDrive/Documents/datasets/Train/'
 
 resptrain = requests.get(zip_file_url_train)
 respval = requests.get(zip_file_url_val)
 
 
 
+
 # Extracts the zip code file to the directory in datasets regular data
-zname = os.path.join('/Users/jamesscott/Documents/datasets/Train', "horse-or-human.zip")
+zname = os.path.join('/Users/jes17/OneDrive/Documents/datasets/Train/', "horse-or-human.zip")
 zfile = open(zname, 'wb')
 zfile.write(resptrain.content)
 zfile.close()
-zf = ZipFile('/Users/jamesscott/Documents/datasets/Train/horse-or-human.zip')
+zf = ZipFile('/Users/jes17/OneDrive/Documents/datasets/Train/horse-or-human.zip')
     # Extract its contents into <extraction_path>
     # note that extractall will automatically create the path
-zf.extractall(path = '/Users/jamesscott/Documents/datasets/Train')
+zf.extractall(path = '/Users/jes17/OneDrive/Documents/datasets/Train')
     # close the ZipFile instance
 zf.close()
 
 # Extracts the zip code file to the directory in datasets validation data
-zname = os.path.join('/Users/jamesscott/Documents/datasets/Validation', "validation-horse-or-human.zip")
+zname = os.path.join('/Users/jes17/OneDrive/Documents/datasets/Validation/', "validation-horse-or-human.zip")
 zfile = open(zname, 'wb')
 zfile.write(respval.content)
 zfile.close()
-zf = ZipFile('/Users/jamesscott/Documents/datasets/Validation/validation-horse-or-human.zip')
+zf = ZipFile('/Users/jes17/OneDrive/Documents/datasets/Validation/validation-horse-or-human.zip')
     # Extract its contents into <extraction_path>
     # note that extractall will automatically create the path
-zf.extractall(path = '/Users/jamesscott/Documents/datasets/Validation')
+zf.extractall(path = '/Users/jes17/OneDrive/Documents/datasets/Validation')
     # close the ZipFile instance
 zf.close()
 
 # Directory with our training horse pictures
-train_horse_dir = os.path.join('/Users/jamesscott/Documents/datasets/Train/horses')
+train_horse_dir = os.path.join('/Users/jes17/OneDrive/Documents/datasets/Train/horses')
 
 # Directory with our training human pictures
-train_human_dir = os.path.join('/Users/jamesscott/Documents/datasets/Train/humans')
+train_human_dir = os.path.join('/Users/jes17/OneDrive/Documents/datasets/Train/humans')
 
 # Directory with our training horse pictures
-validation_horse_dir = os.path.join('/Users/jamesscott/Documents/datasets/Validation/horses')
+validation_horse_dir = os.path.join('/Users/jes17/OneDrive/Documents/datasets/Validation/horses')
 
 # Directory with our training human pictures
-validation_human_dir = os.path.join('/Users/jamesscott/Documents/datasets/Validation/humans')
+validation_human_dir = os.path.join('/Users/jes17/OneDrive/Documents/datasets/Validation/humans')
 
 # Shows length to make sure they match
 print('total training horse images:', len(os.listdir(train_horse_dir)))
@@ -81,7 +82,7 @@ print(validation_human_names[:10])
 # Callback Method to Stop training once significant accuracy is reached
 class myCallBack(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
-        if (logs.get('accuracy')>0.95):
+        if (logs.get('acc')>0.95):
             print("\nReached 80% accuracy so cancelling training!")
             self.model.stop_training = True
 
@@ -136,7 +137,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
 # All images will be rescaled by 1./255
-train_datagen = ImageDataGenerator(rescale=1/255)
+train_datagen = ImageDataGenerator(rescale=1/255, fill_mode = 'nearest')
 validation_datagen = ImageDataGenerator(rescale=1/255)
 
 ### Arguments
@@ -171,7 +172,7 @@ validation_datagen = ImageDataGenerator(rescale=1/255)
 
 # Flow training images in batches of 128 using train_datagen generator
 train_generator = train_datagen.flow_from_directory(
-        '/Users/jamesscott/Documents/datasets/Train/',  #Directory -  This is the source directory for training images
+        '/Users/jes17/OneDrive/Documents/datasets/Train/',  #Directory -  This is the source directory for training images
         target_size=(150, 150),  # All images will be resized to 150x150 Tuple of integers (height, width), defaults to (256,256). The dimensions to which all images found will be resized.
         batch_size=128,
         # Since we use binary_crossentropy loss, we need binary labels
@@ -195,7 +196,7 @@ train_generator = train_datagen.flow_from_directory(
 
 # Flow training images in batches of 128 using train_datagen generator
 validation_generator = validation_datagen.flow_from_directory(
-        '/Users/jamesscott/Documents/datasets/Validation/',  # This is the source directory for training images
+        '/Users/jes17/OneDrive/Documents/datasets/Validation/',  # This is the source directory for training images
         target_size=(150, 150),  # All images will be resized to 150x150
         batch_size=32,
         # Since we use binary_crossentropy loss, we need binary labels
@@ -228,12 +229,18 @@ epochs   = range(len(acc)) # Get number of epochs
 plt.plot  ( epochs,  acc )
 plt.plot  ( epochs, val_acc )
 plt.title ('Training and validation accuracy')
+plt.plot(epochs, acc, 'r', label='Training accuracy')
+plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
+plt.legend(loc=0)
 plt.figure()
 
 #------------------------------------------------
 # Plot training and validation loss per epoch
 #------------------------------------------------
-plt.plot  ( epochs,     loss )
+plt.plot  ( epochs, loss )
 plt.plot  ( epochs, val_loss )
 plt.title ('Training and validation loss'   )
+plt.plot(epochs, acc, 'r', label='Training accuracy')
+plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
+plt.legend(loc=0)
 plt.show()
