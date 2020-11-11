@@ -107,7 +107,7 @@ validation_sequences = tokenizer.texts_to_sequences(validation_sentences)  # You
 train_padded = pad_sequences(train_sequences, padding=padding_type, maxlen=max_length)
 validation_padded = pad_sequences(validation_sequences, padding=padding_type, maxlen=max_length)  # Your Code here
 ### Aruguments --- Definition - pads sequences of numbers per sentence to the same length
-# sequences - List of sequences (each sequence is a list of integers).
+# sequences1 - List of sequences (each sequence is a list of integers).
 # maxlen - Optional Int, maximum length of all sequences. If not provided, sequences will be padded to the length of the longest individual sequence.
 # dtype - (Optional, defaults to int32). Type of the output sequences. To pad sequences with variable length strings, you can use object.
 # padding - String, 'pre' or 'post' (optional, defaults to 'pre'): pad either before or after each sequence.
