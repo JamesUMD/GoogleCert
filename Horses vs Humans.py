@@ -1,18 +1,11 @@
 import os
-import zipfile
-import tensorflow as tf
-import pandas as pd
-import numpy as np
-import urllib3
-import requests
-import os
 from zipfile import ZipFile
-import matplotlib.image as mpimg
+
 import matplotlib.pyplot as plt
+import requests
+import tensorflow as tf
 
-
-
-#Imports the data from an url
+# Imports the data from an url
 zip_file_url_train = 'https://storage.googleapis.com/laurencemoroney-blog.appspot.com/horse-or-human.zip'
 zip_file_url_val = 'https://storage.googleapis.com/laurencemoroney-blog.appspot.com/validation-horse-or-human.zip'
 path = 'C:/Users/jes17/OneDrive/Documents/datasets/Train/'
@@ -20,19 +13,16 @@ path = 'C:/Users/jes17/OneDrive/Documents/datasets/Train/'
 resptrain = requests.get(zip_file_url_train)
 respval = requests.get(zip_file_url_val)
 
-
-
-
 # Extracts the zip code file to the directory in datasets regular data
 zname = os.path.join('/Users/jes17/OneDrive/Documents/datasets/Train/', "horse-or-human.zip")
 zfile = open(zname, 'wb')
 zfile.write(resptrain.content)
 zfile.close()
 zf = ZipFile('/Users/jes17/OneDrive/Documents/datasets/Train/horse-or-human.zip')
-    # Extract its contents into <extraction_path>
-    # note that extractall will automatically create the path
-zf.extractall(path = '/Users/jes17/OneDrive/Documents/datasets/Train')
-    # close the ZipFile instance
+# Extract its contents into <extraction_path>
+# note that extractall will automatically create the path
+zf.extractall(path='/Users/jes17/OneDrive/Documents/datasets/Train')
+# close the ZipFile instance
 zf.close()
 
 # Extracts the zip code file to the directory in datasets validation data
@@ -41,10 +31,10 @@ zfile = open(zname, 'wb')
 zfile.write(respval.content)
 zfile.close()
 zf = ZipFile('/Users/jes17/OneDrive/Documents/datasets/Validation/validation-horse-or-human.zip')
-    # Extract its contents into <extraction_path>
-    # note that extractall will automatically create the path
-zf.extractall(path = '/Users/jes17/OneDrive/Documents/datasets/Validation')
-    # close the ZipFile instance
+# Extract its contents into <extraction_path>
+# note that extractall will automatically create the path
+zf.extractall(path='/Users/jes17/OneDrive/Documents/datasets/Validation')
+# close the ZipFile instance
 zf.close()
 
 # Directory with our training horse pictures
@@ -79,34 +69,34 @@ print(validation_horse_hames[:10])
 validation_human_names = os.listdir(validation_human_dir)
 print(validation_human_names[:10])
 
+
 # Callback Method to Stop training once significant accuracy is reached
 class myCallBack(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
-        if (logs.get('acc')>0.95):
+        if (logs.get('acc') > 0.95):
             print("\nReached 80% accuracy so cancelling training!")
             self.model.stop_training = True
 
-callbacks = myCallBack() #Passes in my callback function to callbacks to be called in fit method
 
-
+callbacks = myCallBack()  # Passes in my callback function to callbacks to be called in fit method
 
 model = tf.keras.models.Sequential([
     # Note the input shape is the desired size of the image 300x300 with 3 bytes color
     # This is the first convolution
-    tf.keras.layers.Conv2D(16, (3,3), activation='relu', input_shape=(150, 150, 3)),
+    tf.keras.layers.Conv2D(16, (3, 3), activation='relu', input_shape=(150, 150, 3)),
     tf.keras.layers.MaxPooling2D(2, 2),
     # The second convolution
-    tf.keras.layers.Conv2D(32, (3,3), activation='relu'),
-    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(2, 2),
     # The third convolution
-    tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
-    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(2, 2),
     # The fourth convolution
-    tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
-    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(2, 2),
     # The fifth convolution
-    tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
-    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(2, 2),
     # Flatten the results to feed into a DNN
     tf.keras.layers.Flatten(),
     # 512 neuron hidden layer
@@ -117,11 +107,10 @@ model = tf.keras.models.Sequential([
     tf.keras.layers.Dense(1, activation='sigmoid')
 ])
 
-#Shows summary of the model
+# Shows summary of the model
 model.summary()
 
-
-#Compiles the model
+# Compiles the model
 from tensorflow.keras.optimizers import RMSprop
 
 model.compile(loss='binary_crossentropy',
@@ -134,11 +123,9 @@ model.compile(loss='binary_crossentropy',
 
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-
-
 # All images will be rescaled by 1./255
-train_datagen = ImageDataGenerator(rescale=1/255, fill_mode = 'nearest')
-validation_datagen = ImageDataGenerator(rescale=1/255)
+train_datagen = ImageDataGenerator(rescale=1 / 255, fill_mode='nearest')
+validation_datagen = ImageDataGenerator(rescale=1 / 255)
 
 ### Arguments
 # featurewise_center (Boolean. Set input mean to 0 over the dataset, feature-wise.)
@@ -169,14 +156,15 @@ validation_datagen = ImageDataGenerator(rescale=1/255)
 # dtype (Dtype to use for the generated arrays.)
 
 
-
 # Flow training images in batches of 128 using train_datagen generator
 train_generator = train_datagen.flow_from_directory(
-        '/Users/jes17/OneDrive/Documents/datasets/Train/',  #Directory -  This is the source directory for training images
-        target_size=(150, 150),  # All images will be resized to 150x150 Tuple of integers (height, width), defaults to (256,256). The dimensions to which all images found will be resized.
-        batch_size=128,
-        # Since we use binary_crossentropy loss, we need binary labels
-        class_mode='binary'
+    '/Users/jes17/OneDrive/Documents/datasets/Train/',
+    # Directory -  This is the source directory for training images
+    target_size=(150, 150),
+    # All images will be resized to 150x150 Tuple of integers (height, width), defaults to (256,256). The dimensions to which all images found will be resized.
+    batch_size=128,
+    # Since we use binary_crossentropy loss, we need binary labels
+    class_mode='binary'
 )
 
 ### Arguments flow from directory
@@ -193,53 +181,52 @@ train_generator = train_datagen.flow_from_directory(
 # interpolation (Interpolation method used to resample the image if the target size is different from that of the loaded image. Supported methods are "nearest", "bilinear", and "bicubic". If PIL version 1.1.3 or newer is installed, "lanczos" is also supported. If PIL version 3.4.0 or newer is installed, "box" and "hamming" are also supported. By default, "nearest" is used.)
 
 
-
 # Flow training images in batches of 128 using train_datagen generator
 validation_generator = validation_datagen.flow_from_directory(
-        '/Users/jes17/OneDrive/Documents/datasets/Validation/',  # This is the source directory for training images
-        target_size=(150, 150),  # All images will be resized to 150x150
-        batch_size=32,
-        # Since we use binary_crossentropy loss, we need binary labels
-        class_mode='binary')
+    '/Users/jes17/OneDrive/Documents/datasets/Validation/',  # This is the source directory for training images
+    target_size=(150, 150),  # All images will be resized to 150x150
+    batch_size=32,
+    # Since we use binary_crossentropy loss, we need binary labels
+    class_mode='binary')
 
-#fit.generator has same parameters as model.fit
+# fit.generator has same parameters as model.fit
 history = model.fit_generator(
-      train_generator,
-      steps_per_epoch=8,
-      epochs=15,
-      verbose=1,
-      validation_data=validation_generator,
-      validation_steps=8,
-      callbacks=[callbacks]
-    )
+    train_generator,
+    steps_per_epoch=8,
+    epochs=15,
+    verbose=1,
+    validation_data=validation_generator,
+    validation_steps=8,
+    callbacks=[callbacks]
+)
 
 # Retrieve a list of list results on training and test data
 # sets for each training epoch
 
-acc      = history.history[ 'acc' ]
-val_acc  = history.history[ 'val_acc' ]
-loss     = history.history[    'loss' ]
-val_loss = history.history['val_loss' ]
+acc = history.history['acc']
+val_acc = history.history['val_acc']
+loss = history.history['loss']
+val_loss = history.history['val_loss']
 
-epochs   = range(len(acc)) # Get number of epochs
+epochs = range(len(acc))  # Get number of epochs
 
-#------------------------------------------------
+# ------------------------------------------------
 # Plot training and validation accuracy per epoch
-#------------------------------------------------
-plt.plot  ( epochs,  acc )
-plt.plot  ( epochs, val_acc )
-plt.title ('Training and validation accuracy')
+# ------------------------------------------------
+plt.plot(epochs, acc)
+plt.plot(epochs, val_acc)
+plt.title('Training and validation accuracy')
 plt.plot(epochs, acc, 'r', label='Training accuracy')
 plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
 plt.legend(loc=0)
 plt.figure()
 
-#------------------------------------------------
+# ------------------------------------------------
 # Plot training and validation loss per epoch
-#------------------------------------------------
-plt.plot  ( epochs, loss )
-plt.plot  ( epochs, val_loss )
-plt.title ('Training and validation loss'   )
+# ------------------------------------------------
+plt.plot(epochs, loss)
+plt.plot(epochs, val_loss)
+plt.title('Training and validation loss')
 plt.plot(epochs, acc, 'r', label='Training accuracy')
 plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
 plt.legend(loc=0)

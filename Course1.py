@@ -1,6 +1,5 @@
-import tensorflow as tf
-import pandas as pd
 import numpy as np
+import tensorflow as tf
 
 # Imports the dataset
 mnist = tf.keras.datasets.fashion_mnist
@@ -10,66 +9,65 @@ mnist = tf.keras.datasets.fashion_mnist
 # Goal of this task is to run a simple deep learning model from the datasets from mnist
 
 # Data Discovery
-#I want to find size and shape of data
+# I want to find size and shape of data
 
-print('Shape of Data: ', training_images.shape) # Prints the shape of the data
-print('Highest Pixel Number of Data: ', training_images.max()) # Prints the highest value of an image
-print('Lowest Pixel Number of Data: ', training_images.min()) # Prints the lowest value of an image
-print('Length of Training Labels', len(np.unique(training_labels))) # Prints how many classifications there are for a label
+print('Shape of Data: ', training_images.shape)  # Prints the shape of the data
+print('Highest Pixel Number of Data: ', training_images.max())  # Prints the highest value of an image
+print('Lowest Pixel Number of Data: ', training_images.min())  # Prints the lowest value of an image
+print('Length of Training Labels',
+      len(np.unique(training_labels)))  # Prints how many classifications there are for a label
 
 # Shows what the Image looks like
 import matplotlib.pyplot as plt
-plt.imshow(training_images[5],cmap='gray')
+
+plt.imshow(training_images[5], cmap='gray')
 print(training_labels[5])
 print(training_images[5])
+
 
 # Callbacks stops training when a certain accuracy is reached
 
 class myCallBack(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
-        if (logs.get('accuracy')>0.95):
+        if (logs.get('accuracy') > 0.95):
             print("\nReached 80% accuracy so cancelling training!")
             self.model.stop_training = True
 
-callbacks = myCallBack() #Passes in my callback function to callbacks to be called in fit method
 
+callbacks = myCallBack()  # Passes in my callback function to callbacks to be called in fit method
 
-#Normalization of image shape and color to take into account previouly it was just the image shape
-#Creates a 4d list that includes the 28x28 size, the amount of images at 60000 and the color aspect of 1
-#First convolution layer must map shape of data input as well as expect to import everything
-#Convolution layers extract edges from images, so in the case of image classication it extracts important features from
-#An image and helps better with model prediction
-training_images = training_images.reshape((60000, 28, 28,1))
-test_images = test_images.reshape((10000, 28, 28,1))
+# Normalization of image shape and color to take into account previouly it was just the image shape
+# Creates a 4d list that includes the 28x28 size, the amount of images at 60000 and the color aspect of 1
+# First convolution layer must map shape of data input as well as expect to import everything
+# Convolution layers extract edges from images, so in the case of image classication it extracts important features from
+# An image and helps better with model prediction
+training_images = training_images.reshape((60000, 28, 28, 1))
+test_images = test_images.reshape((10000, 28, 28, 1))
 
-
-#Normalize the Images because we only want values of 0 and 1 for the modeel
+# Normalize the Images because we only want values of 0 and 1 for the modeel
 training_images = training_images / 255.0
 test_images = test_images / 255.0
-
-
 
 # Build the Model
 
 model = tf.keras.models.Sequential([
-                                    # Sequential: That defines a SEQUENCE of layers in the neural network
-                                    tf.keras.layers.Conv2D(32, (5,5), activation='relu', input_shape=(28,28,1)),
-                                    # (3,3) refers to the size in which the convoluation is
-                                    # number of convolutions you want to generate. Purely arbitrary, but good to start with something in the order of 32
-                                    # input shape refers to the shape of the data on input, must match the images for training and test
-                                    # activation = relu activation function to use -- in this case we'll use relu, which you might recall is the equivalent of returning x when x>0, else returning 0
-                                    tf.keras.layers.MaxPooling2D(3, 3),
-                                    # MaxPooling layer which is then designed to compress the image, while maintaining the content of the features that were highlighted by the convlution.
-                                    # the effect is to quarter the size of the image. Without going into too much detail here, the idea is that it creates a 2x2 array of pixels, and picks the biggest one, thus turning 4 pixels into 1
-                                    tf.keras.layers.Conv2D(64, (5,5), activation='relu'),
-                                    tf.keras.layers.MaxPooling2D(3,3),
-                                    tf.keras.layers.Flatten(),
-                                    # Flatten: Flatten just takes that square and turns it into a 1 dimensional set
-                                    tf.keras.layers.Dense(512, activation='relu'),
-                                    # Dense: Adds a layer of neurons
-                                    tf.keras.layers.Dense(64, activation='relu'),
-                                    tf.keras.layers.Dense(10, activation='softmax')])
-
+    # Sequential: That defines a SEQUENCE of layers in the neural network
+    tf.keras.layers.Conv2D(32, (5, 5), activation='relu', input_shape=(28, 28, 1)),
+    # (3,3) refers to the size in which the convoluation is
+    # number of convolutions you want to generate. Purely arbitrary, but good to start with something in the order of 32
+    # input shape refers to the shape of the data on input, must match the images for training and test
+    # activation = relu activation function to use -- in this case we'll use relu, which you might recall is the equivalent of returning x when x>0, else returning 0
+    tf.keras.layers.MaxPooling2D(3, 3),
+    # MaxPooling layer which is then designed to compress the image, while maintaining the content of the features that were highlighted by the convlution.
+    # the effect is to quarter the size of the image. Without going into too much detail here, the idea is that it creates a 2x2 array of pixels, and picks the biggest one, thus turning 4 pixels into 1
+    tf.keras.layers.Conv2D(64, (5, 5), activation='relu'),
+    tf.keras.layers.MaxPooling2D(3, 3),
+    tf.keras.layers.Flatten(),
+    # Flatten: Flatten just takes that square and turns it into a 1 dimensional set
+    tf.keras.layers.Dense(512, activation='relu'),
+    # Dense: Adds a layer of neurons
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dense(10, activation='softmax')])
 
 ### Activation Syntax
 # Relu effectively means "If X>0 return X, else return 0" -- so what it does it it only passes values 0 or greater to the next layer in the network.
@@ -101,9 +99,10 @@ model.compile(optimizer='AdaGrad', loss='sparse_categorical_crossentropy', metri
 
 # Fits the Model
 
-model.fit(training_images, training_labels, epochs=5, callbacks = [callbacks], shuffle=True, verbose=1, steps_per_epoch=10)
+model.fit(training_images, training_labels, epochs=5, callbacks=[callbacks], shuffle=True, verbose=1,
+          steps_per_epoch=10)
 ### Arguments
-#x, y
+# x, y
 # batch_size(Integer or None. Number of samples per batch of computation. If unspecified, batch_size will default to 32.), sample_weight,
 # callbacks(List of callbacks to apply during evaluation),
 # verbose(0 or 1. Verbosity mode. 0 = silent, 1 = progress bar),
@@ -123,8 +122,7 @@ model.fit(training_images, training_labels, epochs=5, callbacks = [callbacks], s
 # validation_freq(Only relevant if validation data is provided. Integer or collections_abc.Container instance (e.g. list, tuple, etc.). If an integer, specifies how many training epochs to run before a new validation run is performed, e.g. validation_freq=2 runs validation every 2 epochs. If a Container, specifies the epochs on which to run validation, e.g. validation_freq=[1, 2, 10] runs validation at the end of the 1st, 2nd, and 10th epochs.)
 
 
-
-#Evalutes the Model
+# Evalutes the Model
 
 model.evaluate(test_images, test_labels)
 ### Arguments
@@ -139,12 +137,8 @@ model.evaluate(test_images, test_labels)
 # workers(teger. Used for generator or keras.utils.Sequence input only. Maximum number of processes to spin up when using process-based threading. If unspecified, workers will default to 1. If 0, will execute the generator on the main thread.)
 
 
-
 classifications = model.predict(test_images)
 print(classifications[1])
 print(test_labels[1])
 
-
 model.summary()
-
-
